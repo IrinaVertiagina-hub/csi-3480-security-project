@@ -1,6 +1,15 @@
 import streamlit as st
+from generator import generate_password, calculate_entropy
 
 st.set_page_config(page_title="Password Tool", page_icon="🔐", layout="centered")
+
+st.markdown("""
+    <style>
+    .stAlert p {
+        color: white !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 st.title("🔐 Password Security Tool")
 st.caption("Group K Project")
@@ -18,10 +27,18 @@ with tab1:
     use_uppercase = st.checkbox("Include uppercase letters", value=True)
 
     if st.button("Generate Password", key="gen"):
-        # TODO: implement generate_password() in generator.py
-        password = "PLACEHOLDER — implement generate_password()"
+        password = generate_password(length, use_digits, use_symbols, use_uppercase)
         st.code(password)
-        st.info("Entropy: — bits (implement calculate_entropy())")
+        entropy = calculate_entropy(password)
+        
+        if entropy < 40:
+            st.error(f"🔴 Entropy: {entropy:.2f} bits — Weak")
+        elif entropy < 60:
+            st.warning(f"🟡 Entropy: {entropy:.2f} bits — Fair")
+        elif entropy < 80:
+            st.success(f"🟢 Entropy: {entropy:.2f} bits — Strong")
+        else:
+            st.success(f"💪 Entropy: {entropy:.2f} bits — Very Strong")
 
 # ── Tab 2: Hash Password ──────────────────────────────────────────────────────
 with tab2:
