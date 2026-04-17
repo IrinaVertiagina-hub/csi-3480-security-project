@@ -1,5 +1,6 @@
 import streamlit as st
 from generator import generate_password, calculate_entropy
+from hasher import hash_password, verify_password
 
 st.set_page_config(page_title="Password Tool", page_icon="🔐", layout="centered")
 
@@ -50,8 +51,9 @@ with tab2:
 
     if st.button("Hash Password", key="hash"):
         if password_input:
-            # TODO: implement hash_password() in hasher.py
-            st.code("PLACEHOLDER — implement hash_password()")
+            hashed = hash_password(password_input, algorithm)
+            st.code(hashed)
+            st.success("✅ Password hashed successfully!")
         else:
             st.warning("Please enter a password.")
 
@@ -60,12 +62,17 @@ with tab3:
     st.header("Verify Password")
     st.write("Check if a password matches a stored hash.")
 
-    verify_password = st.text_input("Password", type="password", key="verify_pass")
+    verify_pass_input = st.text_input("Password", type="password", key="verify_pass")
     verify_hash = st.text_area("Hash", key="verify_hash", height=100)
 
     if st.button("Verify", key="verify"):
-        if verify_password and verify_hash:
-            # TODO: implement verify_password() in hasher.py
-            st.info("PLACEHOLDER — implement verify_password()")
+        if verify_pass_input and verify_hash:
+            # Extract algorithm from hash format (Argon2 hashes start with $argon2)
+            algo = "Argon2" if verify_hash.startswith("$argon2") else "SHA-256"
+            is_valid = verify_password(verify_pass_input, verify_hash, algo)
+            if is_valid:
+                st.success("✅ Password matches the hash!")
+            else:
+                st.error("❌ Password does not match the hash.")
         else:
             st.warning("Please fill in both fields.")
