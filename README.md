@@ -15,3 +15,4 @@ streamlit run app.py
 ## Stack
 - Python + Streamlit
 - Argon2 
+- bcrypt
